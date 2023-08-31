@@ -11,7 +11,7 @@ const LocationService = () => {
                 console.log("Vĩ độ: " + latitude + ", Kinh độ: " + longitude);
                 let location = {latitude,longitude, account:{id: idUser}}
 
-                axios.post("http://localhost:8080/locations", location)
+                axios.post("http://45.117.179.204:8080/locations", location)
                     .then(data => {
                         console.log(data);
                     })
