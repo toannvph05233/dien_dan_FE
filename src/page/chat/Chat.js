@@ -4,13 +4,14 @@ import {useState} from 'react';
 import axios from "axios";
 import stompPromise from "../../service/ChatConfig";
 import LocationService from "../../service/LocationService";
+import LocationServer from "../../service/LocationServer";
 
 const Chat = () => {
     const listRef = useRef(null);
     const [accounts, setAccounts] = useState([]);
     const [messages, setMessages] = useState([]);
     const [message, setMessage] = useState({});
-    const [idFriend, setIdFriend] = useState(10);
+    const [idFriend, setIdFriend] = useState(1);
     const [idUser, setIdUser] = useState(localStorage.getItem('id') != null ? parseInt(localStorage.getItem('id')) : 1);
     const [room, setRoom] = useState({});
     const [stompClient, setStompClient] = useState(null);
@@ -41,15 +42,15 @@ const Chat = () => {
             }
             subscription = stompClient.subscribe('/topic/' + idUser, function (chat) {
                 let message = JSON.parse(chat.body);
-                if ((message.chat.roomChat.id === 8 && idFriend === 10) ||
-                    (message.idFriend === idUser && idFriend !== 10) ||
-                    (message.idUser === idUser && idFriend !== 10)) {
+                if ((message.chat.roomChat.id === 1 && idFriend === 1) ||
+                    (message.idFriend === idUser && idFriend !== 1) ||
+                    (message.idUser === idUser && idFriend !== 1)) {
                     setMessages(prevMessages => [...prevMessages, message.chat]);
                 }
             });
         }
 
-        axios.get("http://45.117.179.204:8080/users/" + idUser)
+        axios.get(LocationServer+"users/" + idUser)
             .then(data => {
                 setAccounts(data.data);
             })
@@ -82,18 +83,18 @@ const Chat = () => {
     useEffect(() => {
         async function init() {
             if (isChatAll) {
-                axios.get("http://45.117.179.204:8080/chats/" + 8)
+                axios.get(LocationServer+"chats/" + 1)
                     .then(data => {
                         setMessages(data.data);
-                        setMessage({message: '', idFriend, idUser, room: {id: 8}})
+                        setMessage({message: '', idFriend, idUser, room: {id: 1}})
                     })
                     .catch(function (err) {
                         console.log(err)
                     });
             } else {
-                let dataRoom = await axios.get(`http://45.117.179.204:8080/chats/room/${idUser}/${idFriend}`);
+                let dataRoom = await axios.get(LocationServer+`chats/room/${idUser}/${idFriend}`);
                 setRoom(dataRoom.data)
-                await axios.get("http://45.117.179.204:8080/chats/" + dataRoom.data.id)
+                await axios.get(LocationServer+"chats/" + dataRoom.data.id)
                     .then(data => {
                         if (dataRoom.data.type === 'all') {
                             setIsChatAll(true);
@@ -138,7 +139,7 @@ const Chat = () => {
 
     const handleChatFriend = (idFriend) => {
         setIdFriend(idFriend);
-        if (idFriend === 10) {
+        if (idFriend === 1) {
             setIsChatAll(true);
         } else {
             setIsChatAll(false);
@@ -166,7 +167,7 @@ const Chat = () => {
                                             <li className="p-2 border-bottom"
                                                 style={{
                                                     borderBottom: '1px solid rgba(255,255,255,.3) !important',
-                                                    background: idFriend === 10 ? '#0099FF' : 'none'
+                                                    background: idFriend === 1 ? '#0099FF' : 'none'
                                                 }}>
                                                 <a href="#!"
                                                    className="d-flex justify-content-between">
@@ -178,7 +179,7 @@ const Chat = () => {
                                                             width="50"/>
                                                         <div className="pt-1">
                                                             <p className="fw-bold mb-0"
-                                                               onClick={() => handleChatFriend(10)}>Chat Tổng</p>
+                                                               onClick={() => handleChatFriend(1)}>Chat Tổng</p>
                                                             <p className="small ">Chat toàn hệ thống</p>
                                                         </div>
                                                     </div>

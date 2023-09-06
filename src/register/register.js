@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 import {Link, useNavigate} from 'react-router-dom';
+import LocationServer from "../service/LocationServer";
 
 const Register = () => {
     const [account, setAccount] = useState({});
@@ -12,12 +13,13 @@ const Register = () => {
     };
 
     const register = () => {
-        axios.post("http://45.117.179.204:8080/register", account)
+        axios.post(LocationServer+"register", account)
             .then(data => {
+                alert("Đăng ký thành công")
                 navigate('/login');
             })
             .catch(function (err) {
-                console.log(err)
+                alert("username is exist")
             });
     }
     return (

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 import {Link, useNavigate} from 'react-router-dom';
+import LocationServer from "../service/LocationServer";
 
 const Login = () => {
     const [account, setAccount] = useState({});
@@ -12,7 +13,7 @@ const Login = () => {
     };
 
     const login = () => {
-        axios.post("http://45.117.179.204:8080/login", account)
+        axios.post(LocationServer+"login", account)
             .then(data => {
                 localStorage.setItem('AccountToken', JSON.stringify(data.data));
                 localStorage.setItem('token', data.data.token);

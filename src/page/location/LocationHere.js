@@ -1,14 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import axios from "axios";
+import LocationServer from "../../service/LocationServer";
 
 const LocationHere = () => {
     const [accounts, setAccounts] = useState([]);
     const [idUser, setIdUser] = useState(localStorage.getItem('id') != null ? parseInt(localStorage.getItem('id')) : 1);
-    const [idFriend, setIdFriend] = useState(10);
+    const [idFriend, setIdFriend] = useState(1);
 
 
     useEffect(() => {
-        axios.get("http://45.117.179.204:8080/users/areas/" + idUser)
+        axios.get(LocationServer+"users/areas/" + idUser)
             .then(data => {
                 setAccounts(data.data);
             })

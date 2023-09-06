@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import axios from "axios";
+import LocationServer from "../../service/LocationServer";
 
 
 const Profile = () => {
@@ -9,7 +10,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (userId) {
-            axios.get("http://45.117.179.204:8080/users/profile/" + userId)
+            axios.get(LocationServer+"users/profile/" + userId)
                 .then(data => {
                     setAccount(data.data);
                 })
