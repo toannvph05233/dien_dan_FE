@@ -1,11 +1,18 @@
 import React from 'react';
 import {useState} from 'react';
 import {Link, Outlet} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
 
 
 const Home = () => {
     const [accountToken, setAccountToken] = useState(JSON.parse(localStorage.getItem('AccountToken')));
+    const isLoggedIn = useSelector((state) => state.data);
+    const dispatch = useDispatch();
 
+    const handleIsLoggedIn = () => {
+        dispatch({ type: 'SET_DATA', payload: false });
+        localStorage.clear();
+    };
 
     return (
         <div id="page-top">
@@ -22,8 +29,8 @@ const Home = () => {
                 <div className="collapse navbar-collapse" id="navbarResponsive">
                     <ul className="navbar-nav">
                         <Link to={`/profile/${accountToken.id}`}>
-                        <li className="nav-item"><a className="nav-link js-scroll-trigger"
-                                                    href="#about">{accountToken.username}</a></li>
+                            <li className="nav-item"><a className="nav-link js-scroll-trigger"
+                                                        href="#about">{accountToken.username}</a></li>
                         </Link>
                         <Link to="/">
                             <li className="nav-item"><a className="nav-link js-scroll-trigger" href="#skills">Home</a>
@@ -35,6 +42,17 @@ const Home = () => {
                         </Link>
                         <li className="nav-item"><a className="nav-link js-scroll-trigger"
                                                     href="#education">Post</a></li>
+
+                        {isLoggedIn ?
+                            <li className="nav-item" onClick={handleIsLoggedIn}><a className="nav-link js-scroll-trigger"
+                                                        href="#education">Logout</a></li>
+                            :
+                            <Link to="/login">
+                                <li className="nav-item"><a className="nav-link js-scroll-trigger"
+                                                            href="#experience">Login</a></li>
+                            </Link>
+                        }
+
 
                         {/*<li className="nav-item"><a className="nav-link js-scroll-trigger"*/}
                         {/*                            href="#interests">Interests</a></li>*/}

@@ -2,10 +2,13 @@ import React, {useState, useEffect} from 'react';
 import axios from "axios";
 import {Link, useNavigate} from 'react-router-dom';
 import LocationServer from "../service/LocationServer";
+import {useDispatch} from "react-redux";
 
 const Login = () => {
     const [account, setAccount] = useState({});
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
 
     const handleInputChange = (e) => {
         const {name, value} = e.target;
@@ -18,6 +21,7 @@ const Login = () => {
                 localStorage.setItem('AccountToken', JSON.stringify(data.data));
                 localStorage.setItem('token', data.data.token);
                 localStorage.setItem('id', data.data.id);
+                dispatch({ type: 'SET_DATA', payload: true });
                 navigate('/');
             })
             .catch(function (err) {

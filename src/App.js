@@ -8,16 +8,10 @@ import Login from "./login/login";
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Register from "./register/register";
+import {useSelector} from "react-redux";
 
 const App = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        let accountToken = localStorage.getItem('AccountToken');
-        if (accountToken !== null){
-            setIsLoggedIn(true);
-        }
-    }, []);
+    const isLoggedIn = useSelector((state) => state.data);
 
     return (
         <div className="App">

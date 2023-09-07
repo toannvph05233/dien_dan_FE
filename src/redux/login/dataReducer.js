@@ -1,5 +1,5 @@
 // reducers/dataReducer.js
-const initialState = {};
+const initialState = localStorage.getItem("AccountToken") != null;
 
 const dataReducer = (state = initialState, action) => {
     switch (action.type) {
