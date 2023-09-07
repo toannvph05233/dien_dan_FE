@@ -2,6 +2,7 @@ import React from 'react';
 import {useState} from 'react';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
+import ChangeStatusAccountOffline from "../../service/ChangeStatusAccountOffline";
 
 
 const Home = () => {
@@ -11,6 +12,7 @@ const Home = () => {
 
     const handleIsLoggedIn = () => {
         dispatch({ type: 'SET_DATA', payload: false });
+        ChangeStatusAccountOffline();
         localStorage.clear();
     };
 

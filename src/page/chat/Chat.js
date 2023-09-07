@@ -25,7 +25,7 @@ const Chat = () => {
             .then(client => {
                 setStompClient(client);
                 setIsConnected(true);
-
+                client.send("/gkz/online", {}, JSON.stringify({idUser: idUser}));
             })
             .catch(error => {
                 console.error('Error connecting to STOMP:', error);
@@ -42,15 +42,25 @@ const Chat = () => {
             }
             subscription = stompClient.subscribe('/topic/' + idUser, function (chat) {
                 let message = JSON.parse(chat.body);
-                if ((message.chat.roomChat.id === 1 && idFriend === 1) ||
-                    (message.idFriend === idUser && idFriend !== 1) ||
-                    (message.idUser === idUser && idFriend !== 1)) {
-                    setMessages(prevMessages => [...prevMessages, message.chat]);
+                if (message.type === "chat") {
+                    if ((message.chat.roomChat.id === 1 && idFriend === 1) ||
+                        (message.idFriend === idUser && idFriend !== 1) ||
+                        (message.idUser === idUser && idFriend !== 1)) {
+                        setMessages(prevMessages => [...prevMessages, message.chat]);
+                    }
+                } else if (message.type === "online"){
+                    axios.get(LocationServer + "users/" + idUser)
+                        .then(data => {
+                            setAccounts(data.data);
+                        })
+                        .catch(function (err) {
+                            console.log(err)
+                        });
                 }
             });
         }
 
-        axios.get(LocationServer+"users/" + idUser)
+        axios.get(LocationServer + "users/" + idUser)
             .then(data => {
                 setAccounts(data.data);
             })
@@ -71,19 +81,10 @@ const Chat = () => {
     }, [messages])
 
 
-    // useEffect(() => {
-    //     return () => {
-    //         if (stompClient) {
-    //             stompClient.disconnect();
-    //         }
-    //     };
-    // }, [stompClient]);
-
-
     useEffect(() => {
         async function init() {
             if (isChatAll) {
-                axios.get(LocationServer+"chats/" + 1)
+                axios.get(LocationServer + "chats/" + 1)
                     .then(data => {
                         setMessages(data.data);
                         setMessage({message: '', idFriend, idUser, room: {id: 1}})
@@ -92,9 +93,9 @@ const Chat = () => {
                         console.log(err)
                     });
             } else {
-                let dataRoom = await axios.get(LocationServer+`chats/room/${idUser}/${idFriend}`);
+                let dataRoom = await axios.get(LocationServer + `chats/room/${idUser}/${idFriend}`);
                 setRoom(dataRoom.data)
-                await axios.get(LocationServer+"chats/" + dataRoom.data.id)
+                await axios.get(LocationServer + "chats/" + dataRoom.data.id)
                     .then(data => {
                         if (dataRoom.data.type === 'all') {
                             setIsChatAll(true);
@@ -192,7 +193,8 @@ const Chat = () => {
                                             </li>
                                         </ul>
 
-                                        <ul className="list-unstyled mb-0" style={{maxHeight: '300px', overflowY: 'auto'}}>
+                                        <ul className="list-unstyled mb-0"
+                                            style={{maxHeight: '300px', overflowY: 'auto'}}>
                                             {
                                                 accounts.map(account => {
                                                     return (

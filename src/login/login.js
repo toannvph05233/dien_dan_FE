@@ -3,6 +3,7 @@ import axios from "axios";
 import {Link, useNavigate} from 'react-router-dom';
 import LocationServer from "../service/LocationServer";
 import {useDispatch} from "react-redux";
+import ChangeStatusAccountOnline from "../service/ChangeStatusAccountOnline";
 
 const Login = () => {
     const [account, setAccount] = useState({});
@@ -22,6 +23,7 @@ const Login = () => {
                 localStorage.setItem('token', data.data.token);
                 localStorage.setItem('id', data.data.id);
                 dispatch({ type: 'SET_DATA', payload: true });
+                ChangeStatusAccountOnline();
                 navigate('/');
             })
             .catch(function (err) {
