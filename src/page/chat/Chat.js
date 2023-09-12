@@ -15,18 +15,15 @@ const Chat = () => {
     const [idUser, setIdUser] = useState(localStorage.getItem('id') != null ? parseInt(localStorage.getItem('id')) : 1);
     const [room, setRoom] = useState({});
     const [stompClient, setStompClient] = useState(null);
-    const [isConnected, setIsConnected] = useState(false);
     const [isChatAll, setIsChatAll] = useState(true);
 
 
     useEffect(() => {
         LocationService();
-        stompPromise
-            .then(client => {
-                setStompClient(client);
-                setIsConnected(true);
-                client.send("/gkz/online", {}, JSON.stringify({idUser: idUser}));
-            })
+        stompPromise.then(client => {
+            setStompClient(client);
+            client.send("/gkz/isOnline", {}, JSON.stringify({idUser: idUser}));
+        })
             .catch(error => {
                 console.error('Error connecting to STOMP:', error);
             });
@@ -36,7 +33,7 @@ const Chat = () => {
     useEffect(() => {
         let subscription = null;
 
-        if (stompClient && isConnected && idFriend) {
+        if (stompClient && idFriend) {
             if (subscription) {
                 subscription.unsubscribe();
             }
@@ -48,18 +45,28 @@ const Chat = () => {
                         (message.idUser === idUser && idFriend !== 1)) {
                         setMessages(prevMessages => [...prevMessages, message.chat]);
                     }
-                } else if (message.type === "online"){
-                    axios.get(LocationServer + "users/" + idUser)
-                        .then(data => {
-                            setAccounts(data.data);
-                        })
-                        .catch(function (err) {
-                            console.log(err)
-                        });
                 }
+                getAccountFriend();
             });
         }
+        axios.get(LocationServer + `notifications/${idUser}/${idFriend}`)
+            .then(data => {
+                console.log("notifications is write")
+            })
+            .catch(function (err) {
+                console.log(err)
+            });
 
+        getAccountFriend();
+        return () => {
+            if (subscription) {
+                subscription.unsubscribe();
+            }
+        };
+    }, [stompClient, idFriend]);
+
+
+    function getAccountFriend() {
         axios.get(LocationServer + "users/" + idUser)
             .then(data => {
                 setAccounts(data.data);
@@ -67,14 +74,7 @@ const Chat = () => {
             .catch(function (err) {
                 console.log(err)
             });
-
-        return () => {
-            if (subscription) {
-                subscription.unsubscribe();
-            }
-        };
-    }, [stompClient, isConnected, idFriend]);
-
+    }
 
     useEffect(() => {
         scrollToBottom();
@@ -110,6 +110,7 @@ const Chat = () => {
                     });
 
                 scrollToBottom();
+
             }
         }
 
@@ -185,7 +186,7 @@ const Chat = () => {
                                                         </div>
                                                     </div>
                                                     <div className="pt-1">
-                                                        <p className="small mb-1">Just now</p>
+                                                        <p className="small mb-1">Online</p>
                                                         <span
                                                             className="badge bg-danger float-end">1</span>
                                                     </div>
@@ -218,9 +219,9 @@ const Chat = () => {
                                                                     </div>
                                                                 </div>
                                                                 <div className="pt-1">
-                                                                    <p className="small mb-1">Just now</p>
-                                                                    <span
-                                                                        className="badge bg-danger float-end">1</span>
+                                                                    <p className="small mb-1">Online</p>
+                                                                    {account.notifications.length > 0 ? <span
+                                                                        className="badge bg-danger float-end">{account.notifications.length}</span> : <></>}
                                                                 </div>
                                                             </a>
                                                         </li>

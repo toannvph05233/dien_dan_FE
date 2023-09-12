@@ -3,17 +3,27 @@ import {useState} from 'react';
 import {Link, Outlet} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import ChangeStatusAccountOffline from "../../service/ChangeStatusAccountOffline";
+import stompPromise from "../../service/ChatConfig";
 
 
 const Home = () => {
     const [accountToken, setAccountToken] = useState(JSON.parse(localStorage.getItem('AccountToken')));
     const isLoggedIn = useSelector((state) => state.data);
     const dispatch = useDispatch();
+    const [idUser, setIdUser] = useState(localStorage.getItem('id') != null ? parseInt(localStorage.getItem('id')) : 1);
 
-    const handleIsLoggedIn = () => {
-        dispatch({ type: 'SET_DATA', payload: false });
+    const handleLogout = () => {
+        dispatch({type: 'SET_DATA', payload: false});
         ChangeStatusAccountOffline();
         localStorage.clear();
+
+        stompPromise.then(client => {
+            client.send("/gkz/isOnline", {}, JSON.stringify({idUser: idUser}));
+        })
+            .catch(error => {
+                console.error('Error connecting to STOMP:', error);
+            });
+
     };
 
     return (
@@ -46,8 +56,8 @@ const Home = () => {
                                                     href="#education">Post</a></li>
 
                         {isLoggedIn ?
-                            <li className="nav-item" onClick={handleIsLoggedIn}><a className="nav-link js-scroll-trigger"
-                                                        href="#education">Logout</a></li>
+                            <li className="nav-item" onClick={handleLogout}><a className="nav-link js-scroll-trigger"
+                                                                               href="#education">Logout</a></li>
                             :
                             <Link to="/login">
                                 <li className="nav-item"><a className="nav-link js-scroll-trigger"

@@ -1,5 +1,6 @@
 import { Stomp } from '@stomp/stompjs';
-let socket = new WebSocket('ws://localhost:8080/connect-socket/websocket');
+// let socket = new WebSocket('ws://localhost:8080/connect-socket/websocket');
+let socket = new WebSocket('ws://45.117.179.204:8080/connect-socket/websocket');
 let stompClient = Stomp.over(socket);
 
 const stompPromise = new Promise((resolve, reject) => {
